@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MimicLibrary - Home</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ede8f5; /* Soft light background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            width: 100%;
+            padding: 20px;
+            background-color: #273d8d; /* Darker blue */
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            flex: 1;
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex: 2;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .login-signup {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #7091E6; /* Softer blue */
+            color: #ede8f5; /* Light text */
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #8697c4; /* Hover effect color */
+            color: white;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .welcome-message {
+            background-color: #adbbda; /* Light blue background */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .welcome-message h2 {
+            margin: 0;
+            color: #3d52a0; /* Darker blue text */
+        }
+
+        .welcome-description {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .available-books {
+            background-color: #ede8f5;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #adbbda;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        li:hover {
+            background-color: #8697c4; /* Hover effect for book items */
+        }
+
+        .book-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3d52a0;
+        }
+
+        .author, .description {
+            font-size: 16px;
+            color: #555;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MimicLibrary</h1>
+        <div class="login-signup">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn">Login</a>
+                <a href="{% url 'signup' %}" class="btn">Sign Up</a>
+            {% endif %}
+        </div>
+        <nav class="nav-links">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'book_list' %}">Books</a>
+            <a href="#">About Us</a>
+            <a href="mailto:mimic.allspam@gmail.com">Contact Us</a>
+            <a href="{% url 'admin:index' %}">Admin</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="welcome-message">
+            <h2>Welcome to the Library Management System!</h2>
+            <p class="welcome-description">
+                Our library aims to provide a rich collection of books and resources to foster learning and knowledge.
+            </p>
+            {% if user.is_authenticated %}
+                <h3>Welcome, {{ user.username }}!</h3>
+            {% endif %}
+        </div>
+
+        <!-- Button to View Borrowed Books -->
+        <a href="{% url 'borrowed_books' %}" class="btn">View Borrowed Books</a>
+
+        <div class="available-books">
+            <h3>Available Books:</h3>
+            <ul>
+                {% for book in books %}
+                    <li>
+                        <span>
+                            <span class="book-title">{{ book.title }}</span> by <span class="author">{{ book.author }}</span><br>
+                            <span class="description">{{ book.description }}</span><br>
+                            <span class="description">Unique Code: {{ book.unique_code }}</span>
+                        </span>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

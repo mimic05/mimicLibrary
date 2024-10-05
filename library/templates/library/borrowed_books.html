@@ -1,0 +1,22 @@
+<!-- borrowed_books.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Borrowed Books</title>
+</head>
+<body>
+    <a href="{% url 'home' %}">Home</a>
+    <h1>Borrowed Books</h1>
+    <ul>
+        {% for transaction in transactions %}
+        <li>
+            {{ transaction.book.title }} (Issued on: {{ transaction.issue_date }})
+            <form action="{% url 'return_book' transaction.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Return</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

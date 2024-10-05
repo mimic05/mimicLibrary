@@ -1,0 +1,15 @@
+<!-- return_book.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Return Book</title>
+</head>
+<body>
+    <h1>Return Book</h1>
+    <p>Are you sure you want to return "{{ transaction.book.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Return</button>
+    </form>
+</body>
+</html>

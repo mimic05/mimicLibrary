@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Available Books</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #ede8f5; /* Light background */
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #3d52a0; /* Darker blue for header */
+        }
+
+        .book-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .book-item {
+            background-color: #adbbda; /* Light blue-grey */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 250px;
+            text-align: center;
+            transition: transform 0.2s, background-color 0.3s ease;
+        }
+
+        .book-item:hover {
+            transform: scale(1.05);
+            background-color: #7091E6; /* Hover color */
+            color: white;
+        }
+
+        .issue-button {
+            background-color: #3d52a0; /* Button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s;
+        }
+
+        .issue-button:hover {
+            background-color: #7091E6; /* Button hover color */
+        }
+
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.4); 
+            padding-top: 60px; 
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .back-button {
+            display: block;
+            background-color: #3d52a0; /* Back button color */
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 20px auto;
+            width: 200px;
+            transition: background-color 0.2s;
+        }
+
+        .back-button:hover {
+            background-color: #7091E6; /* Back button hover color */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Available Books</h1>
+
+    <div class="book-list">
+        {% for book in books %}
+            <div class="book-item">
+                <div class="book-info">
+                    <h3>{{ book.title }}</h3>
+                    <p>by {{ book.author }}</p>
+                </div>
+
+                <!-- Button to open the modal -->
+                <button class="issue-button" onclick="openModal('{{ book.id }}', '{{ book.title }}', '{{ book.author }}')">Issue this book</button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Back to Home Button -->
+    <a href="{% url 'home' %}" class="back-button">Back to Home</a>
+
+    <!--RESPONSIBLE FOR FORM WHEN CLICKED ISSUE THIS BOOK -->
+    <!-- Modal -->
+    <div id="issueModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Issue a Book</h2>
+                <form id="issueForm" method="POST" action="{% url 'issue_book' 0 %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="issued_by" value="{{ user.username }}">
+                    
+                    <label for="bookName">Book Name:</label>
+                    <input type="text" id="bookName" name="bookName" readonly>
+                    
+                    <label for="bookCode">Unique Code:</label>
+                    <input type="text" id="bookCode" name="bookCode" readonly>  <!-- Now it's readonly! -->
+                    
+                    <label for="authorName">Author Name:</label>
+                    <input type="text" id="authorName" name="authorName" readonly>
+                    
+                    <label for="issueDate">Issue Date:</label>
+                    <input type="text" id="issueDate" name="issueDate" readonly> <!-- Auto-filled! -->
+                    
+                    <label for="returnDate">Expected Return Date:</label>
+                    <input type="text" id="returnDate" name="returnDate" readonly> <!-- Auto-filled! -->
+                    
+                    <label for="address">Address:</label>
+                    <input type="text" id="address" name="address" required>
+                    
+                    <button type="submit" class="issue-button">Submit</button>
+                </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to open the modal and set the book details
+        function openModal(bookId, bookTitle, bookAuthor, bookCode) {
+            const today = new Date().toISOString().split('T')[0];  // Get today's date
+            const returnDate = new Date();
+            returnDate.setDate(returnDate.getDate() + 30);  // Set return date to 30 days later
+            const formattedReturnDate = returnDate.toISOString().split('T')[0];
+            
+            document.getElementById('issueForm').action = "{% url 'issue_book' 0 %}".replace('0', bookId);
+            document.getElementById('bookName').value = bookTitle;
+            document.getElementById('authorName').value = bookAuthor;
+            document.getElementById('bookCode').value = bookCode;  // Pre-fill the unique code
+            document.getElementById('issueDate').value = today;  // Auto-fill issue date
+            document.getElementById('returnDate').value = formattedReturnDate;  // Auto-fill return date
+            document.getElementById('issueModal').style.display = "block";
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            document.getElementById('issueModal').style.display = "none";
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('issueModal')) {
+                closeModal();
+            }
+        }
+    </script>
+
+</body>
+</html>
